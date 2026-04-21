@@ -1,0 +1,87 @@
+{
+  "pageClassName": "LoginPage",
+  "pageRoute": "/login",
+  "slug": "login-nafath",
+  "summary": "Login via Nafath with three user-type tabs (Beneficiary/Contractor/Driver), 10-digit National ID validation, and Nafath mobile-app verification flow",
+  "uiElements": [
+    { "property": "beneficiaryTab",    "locator": "page.getByRole('tab', { name: /beneficiary/i })",              "description": "Beneficiary user-type tab — selected by default" },
+    { "property": "contractorTab",     "locator": "page.getByRole('tab', { name: /contractor/i })",               "description": "Contractor user-type tab" },
+    { "property": "driverTab",         "locator": "page.getByRole('tab', { name: /driver/i })",                   "description": "Driver user-type tab" },
+    { "property": "nationalIdInput",   "locator": "page.getByPlaceholder(/enter your id/i)",                      "description": "National/Iqama ID text field (10 digits numeric)" },
+    { "property": "loginWithNafathBtn","locator": "page.getByRole('button', { name: /login with nafath/i })",     "description": "Submits ID and initiates Nafath authentication" },
+    { "property": "verificationNumber","locator": "page.locator('[data-testid=\"verification-number\"]')",        "description": "Verification number shown while waiting for Nafath app approval" },
+    { "property": "portalHomePage",    "locator": "page.locator('[data-testid=\"portal-home\"], [data-testid=\"dashboard\"]').first()", "description": "Souqya portal homepage element confirming successful login" }
+  ],
+  "testGroups": [
+    {
+      "name": "Tab behaviour",
+      "tags": "@smoke @ui",
+      "tests": [
+        { "id": "TC-01", "title": "Beneficiary tab is selected by default",           "steps": ["Navigate to /login"], "expected": "Beneficiary tab has aria-selected=true", "testDataKey": null, "priority": "P1" },
+        { "id": "TC-02", "title": "All three tabs are visible",                       "steps": ["Navigate to /login"], "expected": "Beneficiary, Contractor, Driver tabs all visible", "testDataKey": null, "priority": "P1" },
+        { "id": "TC-03", "title": "Each tab can be selected and becomes active",       "steps": ["Navigate to /login", "Click each tab in turn"], "expected": "Clicked tab becomes active", "testDataKey": null, "priority": "P1" },
+        { "id": "TC-04", "title": "Switching tabs resets the ID field",               "steps": ["Enter an ID", "Switch tab"], "expected": "ID field is empty on new tab", "testDataKey": null, "priority": "P2" }
+      ]
+    },
+    {
+      "name": "Happy path",
+      "tags": "@smoke @regression @ui",
+      "tests": [
+        { "id": "TC-05", "title": "Beneficiary login shows verification number",  "steps": ["Select Beneficiary", "Enter valid ID", "Click Login with Nafath"], "expected": "Verification number page is shown", "testDataKey": "VALID_BENEFICIARY", "priority": "P1" },
+        { "id": "TC-06", "title": "Contractor login shows verification number",   "steps": ["Select Contractor", "Enter valid ID", "Click Login with Nafath"], "expected": "Verification number page is shown", "testDataKey": "VALID_CONTRACTOR", "priority": "P1" },
+        { "id": "TC-07", "title": "Driver login shows verification number",       "steps": ["Select Driver", "Enter valid ID", "Click Login with Nafath"], "expected": "Verification number page is shown", "testDataKey": "VALID_DRIVER", "priority": "P1" },
+        { "id": "TC-08", "title": "ID with leading zeros is accepted",            "steps": ["Select Beneficiary", "Enter 10-digit ID starting with 0", "Click Login with Nafath"], "expected": "Verification number page is shown", "testDataKey": "LEADING_ZERO_ID", "priority": "P2" }
+      ]
+    },
+    {
+      "name": "Validation",
+      "tags": "@regression @ui",
+      "tests": [
+        { "id": "TC-09",  "title": "Empty ID shows validation error",                "steps": ["Leave ID empty", "Click Login with Nafath"], "expected": "Validation error shown", "testDataKey": "EMPTY_ID", "priority": "P1" },
+        { "id": "TC-10",  "title": "9-digit ID (too short) shows error",             "steps": ["Enter 9-digit ID", "Click Login with Nafath"], "expected": "Validation error shown", "testDataKey": "TOO_SHORT_ID", "priority": "P1" },
+        { "id": "TC-11",  "title": "11-digit ID (too long) shows error",             "steps": ["Enter 11-digit ID", "Click Login with Nafath"], "expected": "Validation error shown", "testDataKey": "TOO_LONG_ID", "priority": "P1" },
+        { "id": "TC-12",  "title": "Alphabetic ID shows error",                      "steps": ["Enter letters", "Click Login with Nafath"], "expected": "Validation error shown", "testDataKey": "ALPHA_ID", "priority": "P1" },
+        { "id": "TC-13",  "title": "Mixed alphanumeric ID shows error",              "steps": ["Enter mixed input", "Click Login with Nafath"], "expected": "Validation error shown", "testDataKey": "ALPHANUM_ID", "priority": "P2" },
+        { "id": "TC-14",  "title": "ID with hyphens shows error",                    "steps": ["Enter ID with hyphens", "Click Login with Nafath"], "expected": "Validation error shown", "testDataKey": "HYPHEN_ID", "priority": "P2" },
+        { "id": "TC-15",  "title": "ID with spaces shows error",                     "steps": ["Enter ID with spaces", "Click Login with Nafath"], "expected": "Validation error shown", "testDataKey": "SPACES_ID", "priority": "P2" },
+        { "id": "TC-16",  "title": "Whitespace-only input shows error",              "steps": ["Enter whitespace only", "Click Login with Nafath"], "expected": "Validation error shown", "testDataKey": "WHITESPACE_ID", "priority": "P2" }
+      ]
+    },
+    {
+      "name": "Edge cases",
+      "tags": "@regression @ui",
+      "tests": [
+        { "id": "TC-17", "title": "SQL injection payload is rejected safely",         "steps": ["Enter SQL injection string", "Click Login with Nafath"], "expected": "Validation error shown, no server error or data leak", "testDataKey": "SQL_INJECTION", "priority": "P1" },
+        { "id": "TC-18", "title": "XSS payload is rejected safely",                  "steps": ["Enter XSS string", "Click Login with Nafath"], "expected": "Validation error shown, script not executed", "testDataKey": "XSS_PAYLOAD", "priority": "P1" },
+        { "id": "TC-19", "title": "Arabic unicode digits are rejected",               "steps": ["Enter Arabic-Indic digits", "Click Login with Nafath"], "expected": "Validation error shown (field expects ASCII numeric)", "testDataKey": "ARABIC_DIGITS", "priority": "P2" }
+      ]
+    }
+  ],
+  "validFixtures": {
+    "VALID_BENEFICIARY": { "nationalId": "1234567890", "userType": "Beneficiary" },
+    "VALID_CONTRACTOR":  { "nationalId": "9876543210", "userType": "Contractor"  },
+    "VALID_DRIVER":      { "nationalId": "1122334455", "userType": "Driver"       },
+    "LEADING_ZERO_ID":   { "nationalId": "0123456789", "userType": "Beneficiary" }
+  },
+  "invalidFixtures": {
+    "EMPTY_ID":       "",
+    "TOO_SHORT_ID":   "123456789",
+    "TOO_LONG_ID":    "12345678901",
+    "ALPHA_ID":       "ABCDEFGHIJ",
+    "ALPHANUM_ID":    "ABCD123456",
+    "HYPHEN_ID":      "123-456-789",
+    "SPACES_ID":      "123 456 789",
+    "WHITESPACE_ID":  "          ",
+    "SQL_INJECTION":  "' OR '1'='1",
+    "XSS_PAYLOAD":    "<script>alert(1)</script>",
+    "ARABIC_DIGITS":  "\u0661\u0662\u0663\u0664\u0665\u0666\u0667\u0668\u0669\u0660"
+  },
+  "apiEndpoints": [],
+  "riskAreas": [
+    "External Nafath service dependency — any outage blocks all logins",
+    "National ID must be strictly 10 ASCII digits — arabic/unicode digits must be rejected",
+    "Beneficiary tab MUST be the default — wrong default routes users to wrong journey",
+    "Secure callback after Nafath approval — must not be spoofable",
+    "Verification number page must not auto-proceed without Nafath approval"
+  ]
+}

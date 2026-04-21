@@ -1,0 +1,21 @@
+{
+  "name": "qa-universal-framework",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "npx playwright test",
+    "test:headed": "npx playwright test --headed",
+    "test:debug": "npx playwright test --debug",
+    "test:smoke": "npx playwright test --grep @smoke",
+    "test:regression": "npx playwright test --grep @regression",
+    "report": "npx playwright show-report",
+    "generate": "ts-node scripts/generate-story.ts"
+  },
+  "devDependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
+    "@faker-js/faker": "^8.0.0",
+    "@playwright/test": "^1.43.0",
+    "@types/node": "^20.19.39",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.0.0"
+  }
+}

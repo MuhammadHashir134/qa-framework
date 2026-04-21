@@ -1,0 +1,73 @@
+name: QA Universal Framework
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      tags:
+        description: 'Test tags to run (e.g. @smoke or @regression)'
+        required: false
+        default: ''
+      env:
+        description: 'Environment (dev / staging / prod)'
+        required: false
+        default: 'staging'
+
+jobs:
+  test:
+    name: Playwright QA Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [chromium, firefox]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps ${{ matrix.project }}
+
+      - name: Run tests
+        run: |
+          GREP="${{ github.event.inputs.tags }}"
+          if [ -n "$GREP" ]; then
+            npx playwright test --project=${{ matrix.project }} --grep "$GREP"
+          else
+            npx playwright test --project=${{ matrix.project }}
+          fi
+        env:
+          ENV:         ${{ github.event.inputs.env || 'staging' }}
+          BASE_URL:    ${{ secrets.BASE_URL }}
+          STAGING_URL: ${{ secrets.STAGING_URL }}
+
+      - name: Upload HTML report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: report-${{ matrix.project }}
+          path: playwright-report/
+          retention-days: 14
+
+      - name: Upload failure artifacts
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: failures-${{ matrix.project }}
+          path: test-results/
+          retention-days: 7
