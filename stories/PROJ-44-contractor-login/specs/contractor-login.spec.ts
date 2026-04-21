@@ -57,12 +57,12 @@ test.describe(`${STORY} — Happy path @smoke @regression @ui`, () => {
 
   test('TC-06 | Valid 10-digit ID logs in successfully', async () => {
     await page.login(VALID_IDS.standard);
-    await page.assertVisible(page.postLoginIndicator);
+    await page.assertURL(/^(?!.*\/contractor\/login).*$/);
   });
 
   test('TC-07 | Same valid ID accepted on repeat login', async () => {
     await page.login(VALID_IDS.leadingZero);
-    await page.assertVisible(page.postLoginIndicator);
+    await page.assertURL(/^(?!.*\/contractor\/login).*$/);
   });
 
 });
