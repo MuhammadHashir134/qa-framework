@@ -4,8 +4,8 @@
 // ── Valid ──────────────────────────────────────────────────────────────────
 
 export const VALID_IDS = {
-  standard:    '1000050334',   // real National ID (UAT)
-  leadingZero: '1000050334',   // reuses standard — leading-zero ID not available in UAT
+  standard:    '1000050326',   // real contractor National ID (UAT)
+  leadingZero: '1000050326',   // reuses standard — leading-zero ID not available in UAT
 };
 
 // ── Invalid — field-level validation ──────────────────────────────────────
