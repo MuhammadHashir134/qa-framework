@@ -6,17 +6,26 @@
 // ============================================================
 
 import { test, expect } from '../../../core/BaseTest';
+import { Page } from '@playwright/test';
 import { DriverManagementPage } from '../pages/DriverManagementPage';
+import { ContractorLoginPage } from '../../PROJ-44-contractor-login/pages/ContractorLoginPage';
 import {
   VALID_SEARCH_INPUTS,
   INVALID_SEARCH_INPUTS,
   VALID_FILTER_OPTIONS,
-  EXPECTED_COLUMNS,
-  EXPECTED_STATS,
-  VALID_STATUSES,
 } from '../fixtures/view-drivers.data';
 
 const STORY = 'SEKAYA-46 | View Drivers';
+const CONTRACTOR_ID = '1000050326'; // UAT contractor ID
+
+async function loginAndNavigateToDrivers(playwrightPage: Page) {
+  const loginPage = new ContractorLoginPage(playwrightPage);
+  await loginPage.goto();
+  await loginPage.login(CONTRACTOR_ID);
+
+  const driverPage = new DriverManagementPage(playwrightPage);
+  await driverPage.goto();
+}
 
 // ── Page Load & UI Elements ───────────────────────────────────────────────
 
@@ -24,8 +33,8 @@ test.describe(`${STORY} — Page elements @smoke @ui`, () => {
   let page: DriverManagementPage;
 
   test.beforeEach(async ({ page: p }) => {
+    await loginAndNavigateToDrivers(p);
     page = new DriverManagementPage(p);
-    await page.goto();
   });
 
   test('TC-01 | Page loads at /contractor/drivers', async () => {
@@ -71,8 +80,8 @@ test.describe(`${STORY} — Happy path @smoke @regression @ui`, () => {
   let page: DriverManagementPage;
 
   test.beforeEach(async ({ page: p }) => {
+    await loginAndNavigateToDrivers(p);
     page = new DriverManagementPage(p);
-    await page.goto();
   });
 
   test('TC-08 | Search by existing driver name returns results', async () => {
@@ -105,8 +114,8 @@ test.describe(`${STORY} — Validation @regression @ui`, () => {
   let page: DriverManagementPage;
 
   test.beforeEach(async ({ page: p }) => {
+    await loginAndNavigateToDrivers(p);
     page = new DriverManagementPage(p);
-    await page.goto();
   });
 
   const validationCases: [string, string, string][] = [
@@ -131,8 +140,8 @@ test.describe(`${STORY} — Edge cases @regression @ui`, () => {
   let page: DriverManagementPage;
 
   test.beforeEach(async ({ page: p }) => {
+    await loginAndNavigateToDrivers(p);
     page = new DriverManagementPage(p);
-    await page.goto();
   });
 
   test('TC-16 | Search with nonexistent driver name returns no results', async () => {
