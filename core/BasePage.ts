@@ -75,6 +75,18 @@ export abstract class BasePage {
     await this.page.waitForTimeout(seconds * 1000);
   }
 
+  async delay(ms: number) {
+    await this.page.waitForTimeout(ms);
+  }
+
+  getLocator(selector: string): Locator {
+    return this.page.locator(selector);
+  }
+
+  getByText(text: string | RegExp, exact = false): Locator {
+    return this.page.getByText(text, { exact });
+  }
+
   // ── Interactions ───────────────────────────────────────
 
   async clickElement(locator: Locator) {

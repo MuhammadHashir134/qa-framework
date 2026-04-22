@@ -20,22 +20,34 @@ const CONTRACTOR_ID = '1000050326'; // UAT contractor ID
 
 async function loginAndNavigateToDrivers(playwrightPage: Page) {
   // Step 1: Login with contractor ID
+  console.log('🔐 Step 1: Logging in with contractor ID...');
   const loginPage = new ContractorLoginPage(playwrightPage);
   await loginPage.goto();
   await loginPage.login(CONTRACTOR_ID);
+  console.log('✓ Login request submitted, waiting for redirect...');
+  await playwrightPage.waitForTimeout(2000); // Pause to see login process
 
   // Step 2: Wait for home/dashboard to load after login
+  console.log('🏠 Step 2: Waiting for home/dashboard to load...');
   await playwrightPage.waitForURL(/\/contractor\/(dashboard|home)?/);
   await playwrightPage.waitForLoadState('networkidle');
+  console.log('✓ Home screen loaded, looking for menu...');
+  await playwrightPage.waitForTimeout(1500); // Pause to see home screen
 
   // Step 3: Click on "Driver Management" from the left sidebar menu
-  const driverManagementMenuBtn = playwrightPage.getByRole('link', { name: /Driver Management/i });
-  await driverManagementMenuBtn.waitFor({ state: 'visible', timeout: 5000 });
-  await driverManagementMenuBtn.click();
+  console.log('📋 Step 3: Clicking "Driver Management" from menu...');
+  const driverManagementMenuBtn = playwrightPage.locator('a, button, [role="menuitem"]').filter({ hasText: /Driver Management/i });
+  await driverManagementMenuBtn.first().waitFor({ state: 'visible', timeout: 5000 });
+  console.log('✓ Menu item found, clicking now...');
+  await driverManagementMenuBtn.first().click();
+  await playwrightPage.waitForTimeout(1000); // Pause to see menu click
 
   // Step 4: Wait for Driver Management page to load
+  console.log('⏳ Step 4: Waiting for Driver Management page to load...');
   await playwrightPage.waitForURL(/\/contractor\/drivers/);
   await playwrightPage.waitForLoadState('networkidle');
+  console.log('✓ Driver Management page loaded, ready for tests!');
+  await playwrightPage.waitForTimeout(1000); // Final pause before tests
 }
 
 // ── Page Load & UI Elements ───────────────────────────────────────────────
@@ -96,25 +108,37 @@ test.describe(`${STORY} — Happy path @smoke @regression @ui`, () => {
   });
 
   test('TC-08 | Search by existing driver name returns results', async () => {
+    console.log('🔍 Searching for driver...');
     await page.searchDriver(VALID_SEARCH_INPUTS.existingDriver);
+    await page.delay(1500); // Pause to see search results
+    console.log('✓ Search completed');
     const rowCount = await page.getTableRowCount();
     expect(rowCount).toBeGreaterThanOrEqual(1);
   });
 
   test('TC-09 | Filter by "Ready" status shows only ready drivers', async () => {
+    console.log('🏷️  Filtering by "Ready" status...');
     await page.filterByStatus(VALID_FILTER_OPTIONS.ready);
+    await page.delay(1500); // Pause to see filter results
+    console.log('✓ Filter applied');
     const rowCount = await page.getTableRowCount();
     expect(rowCount).toBeGreaterThanOrEqual(1);
   });
 
   test('TC-10 | Filter by "Not Ready" status shows only not-ready drivers', async () => {
+    console.log('🏷️  Filtering by "Not Ready" status...');
     await page.filterByStatus(VALID_FILTER_OPTIONS.notReady);
+    await page.delay(1500); // Pause to see filter results
+    console.log('✓ Filter applied');
     const rowCount = await page.getTableRowCount();
     expect(rowCount).toBeGreaterThanOrEqual(1);
   });
 
   test('TC-11 | Clicking driver ID navigates to driver details page', async () => {
+    console.log('🔗 Clicking driver ID link...');
     await page.clickDriverID(VALID_SEARCH_INPUTS.driverId);
+    await page.delay(1500); // Pause to see navigation
+    console.log('✓ Navigation completed');
     await page.assertURL(/\/contractor\/drivers\/[A-Z0-9-]+/);
   });
 });

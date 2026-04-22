@@ -18,19 +18,19 @@ export class DriverManagementPage extends BasePage {
 
   constructor(page: Page) {
     super(page);
-    this.pageTitle = page.getByText(/Driver Management/i);
+    this.pageTitle = page.locator('h1, h2').filter({ hasText: /Driver Management/i });
     this.addDriverBtn = page.getByRole('button', { name: /Add Driver/i });
-    this.searchInput = page.locator('input[placeholder*="Search"]');
-    this.filterDropdown = page.getByRole('combobox').first();
+    this.searchInput = page.locator('input[placeholder*="Search for a driver"]').first();
+    this.filterDropdown = page.locator('button').filter({ hasText: /^All$/ });
     this.driverTable = page.getByRole('table');
     this.tableRows = page.getByRole('row');
-    this.driverIDLink = page.getByRole('link').first();
+    this.driverIDLink = page.getByText(/DR-\d+/).first();
     this.editBtn = page.getByRole('button', { name: /Edit/i });
     this.deleteBtn = page.getByRole('button', { name: /Delete/i });
-    this.totalDriversStat = page.getByText(/Total Drivers/).locator('..');
-    this.assignedDriversStat = page.getByText(/Assigned Drivers/).locator('..');
-    this.nonAssignedDriversStat = page.getByText(/Non-Assigned Drivers/).locator('..');
-    this.newDriversThisMonthStat = page.getByText(/New Drivers This Month/).locator('..');
+    this.totalDriversStat = page.locator('article').filter({ hasText: /Total Drivers/ }).first();
+    this.assignedDriversStat = page.locator('article').filter({ hasText: /Assigned Drivers/ }).first();
+    this.nonAssignedDriversStat = page.locator('article').filter({ hasText: /Non-Assigned Drivers/ }).first();
+    this.newDriversThisMonthStat = page.locator('article').filter({ hasText: /New Drivers This Month/ }).first();
   }
 
   async goto() {
@@ -40,18 +40,22 @@ export class DriverManagementPage extends BasePage {
   async searchDriver(driverName: string) {
     await this.waitForElement(this.searchInput);
     await this.fillField(this.searchInput, driverName);
-    await this.page.keyboard.press('Enter');
+    await this.getLocator('input[placeholder*="Search for a driver"]').first().press('Enter');
     await this.waitForPageLoad();
   }
 
   async filterByStatus(status: string) {
-    await this.filterDropdown.click();
-    await this.page.getByRole('option', { name: status }).click();
+    await this.clickElement(this.filterDropdown);
+    await this.delay(800);
+    const option = this.getLocator('div, button, [role="option"]').filter({ hasText: new RegExp(`^${status}$`, 'i') }).first();
+    await this.clickElement(option);
+    await this.delay(500);
     await this.waitForPageLoad();
   }
 
   async clickDriverID(driverID: string) {
-    await this.page.getByText(driverID, { exact: true }).click();
+    const driverLink = this.getByText(driverID, true);
+    await this.clickElement(driverLink);
     await this.waitForPageLoad();
   }
 
