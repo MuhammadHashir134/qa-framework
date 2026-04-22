@@ -19,12 +19,23 @@ const STORY = 'SEKAYA-46 | View Drivers';
 const CONTRACTOR_ID = '1000050326'; // UAT contractor ID
 
 async function loginAndNavigateToDrivers(playwrightPage: Page) {
+  // Step 1: Login with contractor ID
   const loginPage = new ContractorLoginPage(playwrightPage);
   await loginPage.goto();
   await loginPage.login(CONTRACTOR_ID);
 
-  const driverPage = new DriverManagementPage(playwrightPage);
-  await driverPage.goto();
+  // Step 2: Wait for home/dashboard to load after login
+  await playwrightPage.waitForURL(/\/contractor\/(dashboard|home)?/);
+  await playwrightPage.waitForLoadState('networkidle');
+
+  // Step 3: Click on "Driver Management" from the left sidebar menu
+  const driverManagementMenuBtn = playwrightPage.getByRole('link', { name: /Driver Management/i });
+  await driverManagementMenuBtn.waitFor({ state: 'visible', timeout: 5000 });
+  await driverManagementMenuBtn.click();
+
+  // Step 4: Wait for Driver Management page to load
+  await playwrightPage.waitForURL(/\/contractor\/drivers/);
+  await playwrightPage.waitForLoadState('networkidle');
 }
 
 // ── Page Load & UI Elements ───────────────────────────────────────────────
@@ -92,14 +103,14 @@ test.describe(`${STORY} — Happy path @smoke @regression @ui`, () => {
 
   test('TC-09 | Filter by "Ready" status shows only ready drivers', async () => {
     await page.filterByStatus(VALID_FILTER_OPTIONS.ready);
-    const rows = await page.page.getByRole('row').count();
-    expect(rows).toBeGreaterThan(1); // At least header + 1 data row
+    const rowCount = await page.getTableRowCount();
+    expect(rowCount).toBeGreaterThanOrEqual(1);
   });
 
   test('TC-10 | Filter by "Not Ready" status shows only not-ready drivers', async () => {
     await page.filterByStatus(VALID_FILTER_OPTIONS.notReady);
-    const rows = await page.page.getByRole('row').count();
-    expect(rows).toBeGreaterThan(1); // At least header + 1 data row
+    const rowCount = await page.getTableRowCount();
+    expect(rowCount).toBeGreaterThanOrEqual(1);
   });
 
   test('TC-11 | Clicking driver ID navigates to driver details page', async () => {
