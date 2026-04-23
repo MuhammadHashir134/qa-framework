@@ -57,8 +57,9 @@ export class DriverManagementPage extends BasePage {
   }
 
   async clickDriverID(employeeID: string) {
-    const driverCell = this.getLocator(`table tbody tr`).filter({ hasText: employeeID }).first();
-    await this.clickElement(driverCell);
+    const driverRow = this.getLocator(`table tbody tr`).filter({ hasText: employeeID }).first();
+    const driverNameCell = driverRow.locator('td').first();
+    await this.clickElement(driverNameCell);
     await this.waitForPageLoad();
   }
 

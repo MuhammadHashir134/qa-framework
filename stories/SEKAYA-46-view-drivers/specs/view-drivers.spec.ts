@@ -108,8 +108,8 @@ test.describe(`${STORY} — Happy path @smoke @regression @ui`, () => {
   });
 
   test('TC-08 | Search by existing driver name returns results', async () => {
-    console.log('🔍 Searching for driver...');
-    await page.searchDriver(VALID_SEARCH_INPUTS.existingDriver);
+    console.log('🔍 Searching for driver by Employee ID...');
+    await page.searchDriver(VALID_SEARCH_INPUTS.employeeId);
     await page.delay(1500); // Pause to see search results
     console.log('✓ Search completed');
     const rowCount = await page.getTableRowCount();
