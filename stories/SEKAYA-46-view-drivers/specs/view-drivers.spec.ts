@@ -136,10 +136,10 @@ test.describe(`${STORY} — Happy path @smoke @regression @ui`, () => {
 
   test('TC-11 | Clicking driver ID navigates to driver details page', async () => {
     console.log('🔗 Clicking driver ID link...');
-    await page.clickDriverID(VALID_SEARCH_INPUTS.driverId);
+    await page.clickDriverID(VALID_SEARCH_INPUTS.employeeId);
     await page.delay(1500); // Pause to see navigation
     console.log('✓ Navigation completed');
-    await page.assertURL(/\/contractor\/drivers\/[A-Z0-9-]+/);
+    await page.assertURL(/\/contractor\/drivers\/\d+/);
   });
 });
 

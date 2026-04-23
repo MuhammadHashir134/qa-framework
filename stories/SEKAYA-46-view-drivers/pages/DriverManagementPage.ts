@@ -39,8 +39,11 @@ export class DriverManagementPage extends BasePage {
 
   async searchDriver(driverName: string) {
     await this.waitForElement(this.searchInput);
-    await this.fillField(this.searchInput, driverName);
-    await this.getLocator('input[placeholder*="Search for a driver"]').first().press('Enter');
+    await this.searchInput.clear();
+    await this.searchInput.fill(driverName);
+    await this.delay(300);
+    await this.searchInput.press('Enter');
+    await this.delay(1000);
     await this.waitForPageLoad();
   }
 
@@ -53,9 +56,9 @@ export class DriverManagementPage extends BasePage {
     await this.waitForPageLoad();
   }
 
-  async clickDriverID(driverID: string) {
-    const driverLink = this.getByText(driverID, true);
-    await this.clickElement(driverLink);
+  async clickDriverID(employeeID: string) {
+    const driverCell = this.getLocator(`table tbody tr`).filter({ hasText: employeeID }).first();
+    await this.clickElement(driverCell);
     await this.waitForPageLoad();
   }
 
