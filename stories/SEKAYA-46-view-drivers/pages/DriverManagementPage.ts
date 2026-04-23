@@ -7,7 +7,7 @@ export class DriverManagementPage extends BasePage {
   readonly searchInput: Locator;
   readonly filterDropdown: Locator;
   readonly driverTable: Locator;
-  readonly tableRows: Locator;
+  readonly tableBodyRows: Locator;
   readonly driverIDLink: Locator;
   readonly editBtn: Locator;
   readonly deleteBtn: Locator;
@@ -21,9 +21,9 @@ export class DriverManagementPage extends BasePage {
     this.pageTitle = page.locator('h1, h2').filter({ hasText: /Driver Management/i });
     this.addDriverBtn = page.getByRole('button', { name: /Add Driver/i });
     this.searchInput = page.locator('input[placeholder*="Search for a driver"]').first();
-    this.filterDropdown = page.locator('button').filter({ hasText: /^All$/ });
+    this.filterDropdown = page.locator('button[aria-haspopup="true"]').filter({ hasText: 'All' }).first();
     this.driverTable = page.getByRole('table');
-    this.tableRows = page.getByRole('row');
+    this.tableBodyRows = page.locator('table tbody tr');
     this.driverIDLink = page.getByText(/DR-\d+/).first();
     this.editBtn = page.getByRole('button', { name: /Edit/i });
     this.deleteBtn = page.getByRole('button', { name: /Delete/i });
@@ -65,8 +65,8 @@ export class DriverManagementPage extends BasePage {
   }
 
   async getTableRowCount(): Promise<number> {
-    const rows = await this.tableRows.count();
-    return rows - 1; // Exclude header row
+    const rows = await this.tableBodyRows.count();
+    return rows; // tbody rows don't include header
   }
 
   async assertPageLoaded() {
