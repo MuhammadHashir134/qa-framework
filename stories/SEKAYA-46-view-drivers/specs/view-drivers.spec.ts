@@ -55,7 +55,8 @@ async function loginAndNavigateToDrivers(playwrightPage: Page) {
 test.describe(`${STORY} — Page elements @smoke @ui`, () => {
   let page: DriverManagementPage;
 
-  test.beforeEach(async ({ page: p }) => {
+  test.beforeEach(async ({ page: p }, testInfo) => {
+    test.skip(testInfo.project.name === 'mobile-chrome', 'Sidebar menu hidden on mobile');
     await loginAndNavigateToDrivers(p);
     page = new DriverManagementPage(p);
   });
@@ -102,7 +103,8 @@ test.describe(`${STORY} — Page elements @smoke @ui`, () => {
 test.describe(`${STORY} — Happy path @smoke @regression @ui`, () => {
   let page: DriverManagementPage;
 
-  test.beforeEach(async ({ page: p }) => {
+  test.beforeEach(async ({ page: p }, testInfo) => {
+    test.skip(testInfo.project.name === 'mobile-chrome', 'Sidebar menu hidden on mobile');
     await loginAndNavigateToDrivers(p);
     page = new DriverManagementPage(p);
   });
@@ -150,7 +152,8 @@ test.describe(`${STORY} — Happy path @smoke @regression @ui`, () => {
 test.describe(`${STORY} — Validation @regression @ui`, () => {
   let page: DriverManagementPage;
 
-  test.beforeEach(async ({ page: p }) => {
+  test.beforeEach(async ({ page: p }, testInfo) => {
+    test.skip(testInfo.project.name === 'mobile-chrome', 'Sidebar menu hidden on mobile');
     await loginAndNavigateToDrivers(p);
     page = new DriverManagementPage(p);
   });
@@ -176,7 +179,8 @@ test.describe(`${STORY} — Validation @regression @ui`, () => {
 test.describe(`${STORY} — Edge cases @regression @ui`, () => {
   let page: DriverManagementPage;
 
-  test.beforeEach(async ({ page: p }) => {
+  test.beforeEach(async ({ page: p }, testInfo) => {
+    test.skip(testInfo.project.name === 'mobile-chrome', 'Sidebar menu hidden on mobile');
     await loginAndNavigateToDrivers(p);
     page = new DriverManagementPage(p);
   });
