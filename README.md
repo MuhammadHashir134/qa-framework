@@ -431,20 +431,19 @@ npm run report
 
 ## Browser Isolation
 
-Each test runs in a **fully isolated browser context**:
+Tests run **sequentially in a single browser instance**:
 
-- No shared cookies, sessions, or localStorage between tests
-- Parallel execution: `fullyParallel: true`
-- Workers: 4 locally, 2 in CI (resource-constrained)
-- Each `beforeEach` creates a fresh login session
-
-This means tests are independent — a failing test cannot affect other tests.
+- `workers: 1` — only one browser open at any time
+- `fullyParallel: false` — tests run one after another
+- Each test gets its own isolated browser context (fresh cookies/session)
+- Minimises server load — no concurrent requests hitting the UAT environment
 
 ```
-Worker 1 ── Chromium ── TC-01 (isolated context)
-Worker 2 ── Chromium ── TC-02 (isolated context)
-Worker 3 ── Firefox  ── TC-01 (isolated context)
-Worker 4 ── Firefox  ── TC-02 (isolated context)
+One Chromium Browser
+  └── TC-01 runs → closes context
+  └── TC-02 runs → closes context
+  └── TC-03 runs → closes context
+  └── ...
 ```
 
 ---

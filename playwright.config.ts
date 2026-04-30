@@ -7,10 +7,10 @@ export default defineConfig({
   timeout:       ENV_CONFIG.timeout,
   retries:       ENV_CONFIG.retries,
 
-  // Each spec file runs fully in parallel across workers
-  // Each test gets its own isolated browser context (page fixture)
-  fullyParallel: true,
-  workers:       process.env.CI ? 2 : 4,
+  // Single worker — one browser opens, all tests run sequentially inside it
+  // Prevents multiple browser instances and reduces server load
+  fullyParallel: false,
+  workers:       1,
 
   expect: { timeout: 10_000 },
 
