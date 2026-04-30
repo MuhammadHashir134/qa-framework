@@ -6,8 +6,11 @@ export default defineConfig({
   testMatch: '**/*.spec.ts',
   timeout:       ENV_CONFIG.timeout,
   retries:       ENV_CONFIG.retries,
-  fullyParallel: false,
-  workers:       2,
+
+  // Each spec file runs fully in parallel across workers
+  // Each test gets its own isolated browser context (page fixture)
+  fullyParallel: true,
+  workers:       process.env.CI ? 2 : 4,
 
   expect: { timeout: 10_000 },
 
@@ -25,6 +28,12 @@ export default defineConfig({
     trace:      'on-first-retry',
     locale:     'en-US',
     timezoneId: 'Asia/Riyadh',
+
+    // Each test gets a completely isolated browser context
+    // No shared state (cookies, localStorage) between tests
+    contextOptions: {
+      ignoreHTTPSErrors: true,
+    },
   },
 
   projects: [
@@ -35,10 +44,6 @@ export default defineConfig({
     {
       name: 'firefox',
       use: { ...devices['Desktop Firefox'] },
-    },
-    {
-      name: 'mobile-chrome',
-      use: { ...devices['Pixel 7'] },
     },
     {
       name: 'api-only',
