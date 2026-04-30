@@ -25,10 +25,13 @@ qa-framework/
 │
 ├── stories/                     ← ONE FOLDER PER JIRA STORY
 │   ├── _TEMPLATE/               ← copy this for every new story
-│   └── PROJ-42-login-nafath/
-│       ├── pages/LoginPage.ts
-│       ├── fixtures/login.data.ts
-│       └── specs/login.spec.ts
+│   ├── PROJ-43-login-nafath/
+│   ├── PROJ-44-contractor-login/
+│   ├── SEKAYA-36-view-profile/
+│   └── SEKAYA-46-view-drivers/
+│       ├── pages/YourPage.ts
+│       ├── fixtures/your.data.ts
+│       └── specs/your.spec.ts
 │
 ├── playwright.config.ts
 ├── package.json
@@ -53,7 +56,7 @@ npx playwright install
 npm test
 
 # Specific story
-npx playwright test stories/PROJ-42-login-nafath
+npx playwright test stories/SEKAYA-36-view-profile
 
 # By tag
 npm run test:smoke
@@ -101,7 +104,7 @@ npm run report
 
 ## CI/CD
 
-Push to `main` or `develop` → GitHub Actions runs all tests on Chromium + Firefox → HTML report uploaded as artifact.
+Push to `main` or `master` → GitHub Actions runs all tests on Chromium + Firefox → HTML report uploaded as artifact.
 
 Manually trigger with specific tags:
 - Go to Actions → QA Universal Framework → Run workflow

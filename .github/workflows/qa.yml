@@ -2,9 +2,9 @@ name: QA Universal Framework
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main, master]
   pull_request:
-    branches: [main]
+    branches: [main, master]
   workflow_dispatch:
     inputs:
       tags:
@@ -34,7 +34,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
@@ -52,9 +52,7 @@ jobs:
             npx playwright test --project=${{ matrix.project }}
           fi
         env:
-          ENV:         ${{ github.event.inputs.env || 'staging' }}
-          BASE_URL:    ${{ secrets.BASE_URL }}
-          STAGING_URL: ${{ secrets.STAGING_URL }}
+          ENV: ${{ github.event.inputs.env || 'staging' }}
 
       - name: Upload HTML report
         uses: actions/upload-artifact@v4
