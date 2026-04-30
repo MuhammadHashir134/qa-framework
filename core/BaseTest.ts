@@ -4,17 +4,30 @@
 // instead of from @playwright/test directly
 // ─────────────────────────────────────────────────────────
 
-import { test as base, expect, Page } from '@playwright/test';
+import { test as base, expect, Page, BrowserContext } from '@playwright/test';
 import { ApiClient } from './ApiClient';
 import { ENV_CONFIG, CURRENT_ENV } from '../config/environments';
 
-// Define what extra fixtures each test gets
-type QAFixtures = {
-  apiClient: ApiClient;
-  storyId:   string;
-};
+type QAFixtures    = { apiClient: ApiClient; storyId: string; };
+type WorkerFixtures = { workerContext: BrowserContext; };
 
-export const test = base.extend<QAFixtures>({
+export const test = base.extend<QAFixtures, WorkerFixtures>({
+
+  // ONE browser context shared across all tests — opened once, closed at the end
+  workerContext: [async ({ browser }, use) => {
+    const ctx = await browser.newContext({
+      ignoreHTTPSErrors: true,
+      locale:     'en-US',
+      timezoneId: 'Asia/Riyadh',
+    });
+    await use(ctx);
+    await ctx.close();
+  }, { scope: 'worker' }],
+
+  // Override default context fixture to return the shared worker context
+  context: async ({ workerContext }, use) => {
+    await use(workerContext);
+  },
 
   // Inject API client into every test automatically
   apiClient: async ({ request }, use) => {
